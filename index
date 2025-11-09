@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameRent - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --secondary: #f8fafc;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --card: #ffffff;
+    }
+
+    .dark {
+      --primary: #10b981;
+      --primary-dark: #34d399;
+      --secondary: #1e293b;
+      --text: #f1f5f9;
+      --text-light: #94a3b8;
+      --border: #334155;
+      --card: #0f172a;
+    }
+
+    body {
+      background-color: var(--secondary);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .card {
+      background-color: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      border: 1px solid var(--border);
+    }
+
+    .stat-card {
+      border-left: 4px solid var(--primary);
+    }
+
+    .progress-bar {
+      height: 6px;
+      border-radius: 3px;
+      background-color: var(--border);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      background-color: var(--primary);
+    }
+
+    .nav-item {
+      padding: 12px 16px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item.active {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .nav-item:hover:not(.active) {
+      background-color: rgba(16, 185, 129, 0.05);
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .status-available {
+      color: var(--primary);
+    }
+
+    .status-rented {
+      color: #f59e0b;
+    }
+
+    .status-maintenance {
+      color: #ef4444;
+    }
+
+    .theme-toggle {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      width: 60px;
+      height: 30px;
+      background-color: var(--border);
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle::before {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: white;
+      left: 3px;
+      transition: all 0.3s ease;
+    }
+
+    #theme-switch:checked + .theme-toggle {
+      background-color: var(--primary);
+    }
+
+    #theme-switch:checked + .theme-toggle::before {
+      transform: translateX(30px);
+    }
+
+    #theme-switch {
+      display: none;
+    }
+
+    .chart-bar {
+      width: 100%;
+      border-radius: 4px;
+      background: linear-gradient(to top, var(--primary), var(--primary-dark));
+    }
+  </style>
+</head>
+<body class="light">
+  <div class="max-w-7xl mx-auto p-6">
+    <header class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-lg bg-green-500 flex items-center justify-center text-white font-bold text-xl">
+          <i class="fas fa-gamepad"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-green-600">GameRent</h1>
+          <p class="text-slate-600 dark:text-slate-400">Sistema de alquiler de consolas</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2">
+          <span class="text-slate-600 dark:text-slate-400 text-sm">Modo claro</span>
+          <input type="checkbox" id="theme-switch">
+          <label for="theme-switch" class="theme-toggle">
+            <span class="sr-only">Alternar tema</span>
+          </label>
+          <span class="text-slate-600 dark:text-slate-400 text-sm">Modo oscuro</span>
+        </div>
+        
+        <div class="text-sm text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-lg">
+          <i class="fas fa-user-circle mr-2"></i>Admin
+        </div>
+        
+        <button class="btn-primary flex items-center gap-2">
+          <i class="fas fa-sign-out-alt"></i> Salir
+        </button>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-12 gap-6">
+      <!-- Sidebar -->
+      <aside class="col-span-12 lg:col-span-3 xl:col-span-2">
+        <nav class="space-y-2">
+          <a class="nav-item active flex items-center gap-3" href="#">
+            <i class="fas fa-chart-pie w-5 text-center"></i>
+            <span>Dashboard</span>
+          </a>
+          <a class="nav-item flex items-center gap-3" href="#">
+            <i class="fas fa-playstation w-5 text-center"></i>
+            <span>Consolas</span>
+          </a>
+          <a class="nav-item flex items-center gap-3" href="#">
+            <i class="fas fa-compact-disc w-5 text-center"></i>
+            <span>Juegos</span>
+          </a>
+          <a class="nav-item flex items-center gap-3" href="#">
+            <i class="fas fa-users w-5 text-center"></i>
+            <span>Clientes</span>
+          </a>
+          <a class="nav-item flex items-center gap-3" href="#">
+            <i class="fas fa-receipt w-5 text-center"></i>
+            <span>Ventas</span>
+          </a>
+        </nav>
+        
+        <!-- Resumen rápido -->
+        <div class="card p-4 mt-8">
+          <h3 class="font-semibold text-lg mb-3">Resumen Rápido</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600 dark:text-slate-400">Ingresos Hoy</span>
+              <span class="font-bold text-green-600">$245.000</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600 dark:text-slate-400">Alquileres Activos</span>
+              <span class="font-bold text-green-500">18</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600 dark:text-slate-400">Devoluciones Hoy</span>
+              <span class="font-bold text-blue-500">7</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Contenido principal -->
+      <main class="col-span-12 lg:col-span-9 xl:col-span-10">
+        <!-- Tarjetas de estadísticas -->
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div class="card stat-card p-5">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-slate-600 dark:text-slate-400">Consolas Totales</p>
+                <h3 class="text-3xl font-bold my-2">39</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-500">10 PS5 • 20 PS4 • 9 Xbox 360</p>
+              </div>
+              <div class="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
+                <i class="fas fa-gamepad text-green-600 text-xl"></i>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card stat-card p-5">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-slate-600 dark:text-slate-400">Consolas Alquiladas</p>
+                <h3 class="text-3xl font-bold my-2">24</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-500">61.5% de ocupación</p>
+              </div>
+              <div class="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
+                <i class="fas fa-hand-holding-usd text-green-600 text-xl"></i>
+              </div>
+            </div>
+            <div class="progress-bar mt-4">
+              <div class="progress-fill" style="width: 61.5%"></div>
+            </div>
+          </div>
+          
+          <div class="card stat-card p-5">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-slate-600 dark:text-slate-400">Clientes Activos</p>
+                <h3 class="text-3xl font-bold my-2">42</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-500">+5 esta semana</p>
+              </div>
+              <div class="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
+                <i class="fas fa-users text-green-600 text-xl"></i>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card stat-card p-5">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-slate-600 dark:text-slate-400">En Mantenimiento</p>
+                <h3 class="text-3xl font-bold my-2">3</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-500">2 PS4 • 1 Xbox 360</p>
+              </div>
+              <div class="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
+                <i class="fas fa-tools text-green-600 text-xl"></i>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Gráficas principales -->
+        <section class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+          <!-- Gráfica de alquileres por consola -->
+          <div class="card p-5">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-xl font-bold">Alquileres por Consola</h2>
+              <div class="text-sm text-slate-500 dark:text-slate-500">Últimos 7 días</div>
+            </div>
+            
+            <div class="h-64">
+              <svg viewBox="0 0 400 240" class="w-full h-full">
+                <!-- Ejes -->
+                <line x1="40" y1="20" x2="40" y2="200" stroke="currentColor" stroke-width="1" opacity="0.3" />
+                <line x1="40" y1="200" x2="380" y2="200" stroke="currentColor" stroke-width="1" opacity="0.3" />
+                
+                <!-- Marcas del eje Y -->
+                <text x="25" y="30" fill="currentColor" font-size="12" text-anchor="end" opacity="0.7">10</text>
+                <text x="25" y="80" fill="currentColor" font-size="12" text-anchor="end" opacity="0.7">8</text>
+                <text x="25" y="130" fill="currentColor" font-size="12" text-anchor="end" opacity="0.7">6</text>
+                <text x="25" y="180" fill="currentColor" font-size="12" text-anchor="end" opacity="0.7">4</text>
+                
+                <!-- Líneas de guía -->
+                <line x1="40" y1="30" x2="380" y2="30" stroke="currentColor" stroke-width="1" opacity="0.1" />
+                <line x1="40" y1="80" x2="380" y2="80" stroke="currentColor" stroke-width="1" opacity="0.1" />
+                <line x1="40" y1="130" x2="380" y2="130" stroke="currentColor" stroke-width="1" opacity="0.1" />
+                <line x1="40" y1="180" x2="380" y2="180" stroke="currentColor" stroke-width="1" opacity="0.1" />
+                
+                <!-- Barras -->
+                <rect x="70" y="160" width="40" height="40" fill="#10b981" rx="4" />
+                <text x="90" y="155" fill="currentColor" font-size="12" text-anchor="middle">8</text>
+                <text x="90" y="215" fill="currentColor" font-size="12" text-anchor="middle">PS5</text>
+                
+                <rect x="150" y="120" width="40" height="80" fill="#10b981" rx="4" />
+                <text x="170" y="115" fill="currentColor" font-size="12" text-anchor="middle">13</text>
+                <text x="170" y="215" fill="currentColor" font-size="12" text-anchor="middle">PS4</text>
+                
+                <rect x="230" y="180" width="40" height="20" fill="#10b981" rx="4" />
+                <text x="250" y="175" fill="currentColor" font-size="12" text-anchor="middle">3</text>
+                <text x="250" y="215" fill="currentColor" font-size="12" text-anchor="middle">X360</text>
+                
+                <!-- Línea de tendencia -->
+                <polyline points="90,160 170,120 250,180" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4" />
+              </svg>
+            </div>
+            
+            <div class="mt-4 text-sm text-slate-500 dark:text-slate-500">
+              <i class="fas fa-info-circle mr-2 text-green-500"></i> La PS5 tiene la mayor tasa de alquiler (80%)
+            </div>
+          </div>
+          
+          <!-- Gráfica circular de distribución -->
+          <div class="card p-5">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-xl font-bold">Distribución de Consolas</h2>
+              <div class="text-sm text-slate-500 dark:text-slate-500">Estado actual</div>
+            </div>
+            
+            <div class="h-64 flex items-center justify-center">
+              <svg viewBox="0 0 200 200" class="w-48 h-48">
+                <!-- Gráfica circular -->
+                <circle cx="100" cy="100" r="80" fill="none" stroke="#e5e7eb" stroke-width="16" />
+                
+                <!-- Segmentos -->
+                <circle cx="100" cy="100" r="80" fill="none" stroke="#10b981" stroke-width="16" 
+                  stroke-dasharray="201 402" stroke-dashoffset="0" transform="rotate(-90 100 100)" />
+                
+                <circle cx="100" cy="100" r="80" fill="none" stroke="#f59e0b" stroke-width="16" 
+                  stroke-dasharray="134 402" stroke-dashoffset="-201" transform="rotate(-90 100 100)" />
+                
+                <circle cx="100" cy="100" r="80" fill="none" stroke="#ef4444" stroke-width="16" 
+                  stroke-dasharray="67 402" stroke-dashoffset="-335" transform="rotate(-90 100 100)" />
+                
+                <!-- Texto central -->
+                <text x="100" y="95" text-anchor="middle" fill="currentColor" font-size="14" font-weight="600">39</text>
+                <text x="100" y="115" text-anchor="middle" fill="currentColor" font-size="12" opacity="0.7">Consolas</text>
+              </svg>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-4 mt-4 text-center">
+              <div>
+                <div class="flex items-center justify-center gap-2 mb-1">
+                  <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span class="text-sm font-medium">Disponible</span>
+                </div>
+                <div class="text-lg font-bold">15</div>
+                <div class="text-xs text-slate-500">38.5%</div>
+              </div>
+              
+              <div>
+                <div class="flex items-center justify-center gap-2 mb-1">
+                  <div class="w-3 h-3 bg-amber-500 rounded-full"></div>
+                  <span class="text-sm font-medium">Alquilada</span>
+                </div>
+                <div class="text-lg font-bold">21</div>
+                <div class="text-xs text-slate-500">53.8%</div>
+              </div>
+              
+              <div>
+                <div class="flex items-center justify-center gap-2 mb-1">
+                  <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <span class="text-sm font-medium">Mantenimiento</span>
+                </div>
+                <div class="text-lg font-bold">3</div>
+                <div class="text-xs text-slate-500">7.7%</div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Otras gráficas -->
+        <section class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+          <!-- Gráfica de ingresos mensuales -->
+          <div class="card p-5">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-xl font-bold">Ingresos Mensuales</h2>
+              <div class="text-sm text-slate-500 dark:text-slate-500">Últimos 6 meses</div>
+            </div>
+            
+            <div class="h-64">
+              <svg viewBox="0 0 400 240" class="w-full h-full">
+                <!-- Ejes -->
+                <line x1="40" y1="20" x2="40" y2="200" stroke="currentColor" stroke-width="1" opacity="0.3" />
+                <line x1="40" y1="200" x2="380" y2="200" stroke="currentColor" stroke-width="1" opacity="0.3" />
+                
+                <!-- Marcas del eje Y -->
+                <text x="25" y="30" fill="currentColor" font-size="12" text-anchor="end" opacity="0.7">$400k</text>
+                <text x="25" y="80" fill="currentColor" font-size="12" text-anchor="end" opacity="0.7">$300k</text>
+                <text x="25" y="130" fill="currentColor" font-size="12" text-anchor="end" opacity="0.7">$200k</text>
+                <text x="25" y="180" fill="currentColor" font-size="12" text-anchor="end" opacity="0.7">$100k</text>
+                
+                <!-- Líneas de guía -->
+                <line x1="40" y1="30" x2="380" y2="30" stroke="currentColor" stroke-width="1" opacity="0.1" />
+                <line x1="40" y1="80" x2="380" y2="80" stroke="currentColor" stroke-width="1" opacity="0.1" />
+                <line x1="40" y1="130" x2="380" y2="130" stroke="currentColor" stroke-width="1" opacity="0.1" />
+                <line x1="40" y1="180" x2="380" y2="180" stroke="currentColor" stroke-width="1" opacity="0.1" />
+                
+                <!-- Línea de ingresos -->
+                <polyline points="70,180 110,130 150,160 190,120 230,100 270,80" 
+                  fill="none" stroke="#10b981" stroke-width="3" />
+                
+                <!-- Puntos de datos -->
+                <circle cx="70" cy="180" r="4" fill="#10b981" />
+                <circle cx="110" cy="130" r="4" fill="#10b981" />
+                <circle cx="150" cy="160" r="4" fill="#10b981" />
+                <circle cx="190" cy="120" r="4" fill="#10b981" />
+                <circle cx="230" cy="100" r="4" fill="#10b981" />
+                <circle cx="270" cy="80" r="4" fill="#10b981" />
+                
+                <!-- Etiquetas del eje X -->
+                <text x="70" y="220" fill="currentColor" font-size="12" text-anchor="middle">Ene</text>
+                <text x="110" y="220" fill="currentColor" font-size="12" text-anchor="middle">Feb</text>
+                <text x="150" y="220" fill="currentColor" font-size="12" text-anchor="middle">Mar</text>
+                <text x="190" y="220" fill="currentColor" font-size="12" text-anchor="middle">Abr</text>
+                <text x="230" y="220" fill="currentColor" font-size="12" text-anchor="middle">May</text>
+                <text x="270" y="220" fill="currentColor" font-size="12" text-anchor="middle">Jun</text>
+                
+                <!-- Valores de datos -->
+                <text x="70" y="170" fill="currentColor" font-size="10" text-anchor="middle">$180k</text>
+                <text x="110" y="120" fill="currentColor" font-size="10" text-anchor="middle">$270k</text>
+                <text x="150" y="150" fill="currentColor" font-size="10" text-anchor="middle">$240k</text>
+                <text x="190" y="110" fill="currentColor" font-size="10" text-anchor="middle">$280k</text>
+                <text x="230" y="90" fill="currentColor" font-size="10" text-anchor="middle">$300k</text>
+                <text x="270" y="70" fill="currentColor" font-size="10" text-anchor="middle">$320k</text>
+              </svg>
+            </div>
+            
+            <div class="mt-4 text-sm text-slate-500 dark:text-slate-500">
+              <i class="fas fa-chart-line mr-2 text-green-500"></i> Crecimiento del 78% en los últimos 6 meses
+            </div>
+          </div>
+          
+          <!-- Juegos más populares -->
+          <div class="card p-5">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-xl font-bold">Juegos Más Populares</h2>
+              <div class="text-sm text-slate-500 dark:text-slate-500">Ranking de alquiler</div>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-sm">1</div>
+                  <div>
+                    <div class="font-semibold">FIFA 24</div>
+                    <div class="text-sm text-slate-500 dark:text-slate-500">Deportes</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="font-bold text-green-600">28 alquileres</div>
+                  <div class="text-sm text-slate-500 dark:text-slate-500">+12% esta semana</div>
+                </div>
+              </div>
+              
+              <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-sm">2</div>
+                  <div>
+                    <div class="font-semibold">Call of Duty</div>
+                    <div class="text-sm text-slate-500 dark:text-slate-500">Acción</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="font-bold text-green-600">24 alquileres</div>
+                  <div class="text-sm text-slate-500 dark:text-slate-500">+8% esta semana</div>
+                </div>
+              </div>
+              
+              <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-sm">3</div>
+                  <div>
+                    <div class="font-semibold">Spider-Man 2</div>
+                    <div class="text-sm text-slate-500 dark:text-slate-500">Aventura</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="font-bold text-green-600">19 alquileres</div>
+                  <div class="text-sm text-slate-500 dark:text-slate-500">+15% esta semana</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tabla de alquileres activos -->
+        <section class="card p-5 mb-8">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold">Alquileres Activos</h2>
+            <div class="text-sm text-slate-500 dark:text-slate-500">24 alquileres en curso</div>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-500 text-left text-sm">
+                  <th class="pb-3 font-medium">Cliente</th>
+                  <th class="pb-3 font-medium">Consola</th>
+                  <th class="pb-3 font-medium">Juego</th>
+                  <th class="pb-3 font-medium">Inicio</th>
+                  <th class="pb-3 font-medium">Fin</th>
+                  <th class="pb-3 font-medium">Estado</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                <tr>
+                  <td class="py-3">Carlos Rodríguez</td>
+                  <td class="py-3">
+                    <div class="flex items-center gap-2">
+                      <i class="fab fa-playstation text-blue-500"></i>
+                      <span>PlayStation 5</span>
+                    </div>
+                  </td>
+                  <td class="py-3">FIFA 24</td>
+                  <td class="py-3">15/05/2023</td>
+                  <td class="py-3">22/05/2023</td>
+                  <td class="py-3">
+                    <span class="status-available bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded text-xs">
+                      Activo
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-3">María González</td>
+                  <td class="py-3">
+                    <div class="flex items-center gap-2">
+                      <i class="fab fa-playstation text-blue-400"></i>
+                      <span>PlayStation 4</span>
+                    </div>
+                  </td>
+                  <td class="py-3">Call of Duty</td>
+                  <td class="py-3">16/05/2023</td>
+                  <td class="py-3">23/05/2023</td>
+                  <td class="py-3">
+                    <span class="status-rented bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded text-xs">
+                      Por vencer
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-3">Javier López</td>
+                  <td class="py-3">
+                    <div class="flex items-center gap-2">
+                      <i class="fab fa-xbox text-green-500"></i>
+                      <span>Xbox 360</span>
+                    </div>
+                  </td>
+                  <td class="py-3">Halo 4</td>
+                  <td class="py-3">14/05/2023</td>
+                  <td class="py-3">21/05/2023</td>
+                  <td class="py-3">
+                    <span class="status-available bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded text-xs">
+                      Activo
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <button class="btn-primary w-full mt-4 flex items-center justify-center gap-2">
+            <i class="fas fa-plus"></i> Nuevo Alquiler
+          </button>
+        </section>
+        
+        <footer class="text-center text-slate-500 dark:text-slate-500 py-4 border-t border-slate-200 dark:border-slate-800">
+          <p>© 2023 GameRent - Sistema de alquiler de consolas</p>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Solo el código necesario para el tema
+    document.addEventListener('DOMContentLoaded', function() {
+      const themeSwitch = document.getElementById('theme-switch');
+      const body = document.body;
+      
+      // Comprobar tema guardado o preferencia del sistema
+      if (localStorage.getItem('theme') === 'dark' || 
+          (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        body.classList.add('dark');
+        themeSwitch.checked = true;
+      } else {
+        body.classList.add('light');
+      }
+      
+      // Alternar tema
+      themeSwitch.addEventListener('change', function() {
+        if (this.checked) {
+          body.classList.remove('light');
+          body.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          body.classList.remove('dark');
+          body.classList.add('light');
+          localStorage.setItem('theme', 'light');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
