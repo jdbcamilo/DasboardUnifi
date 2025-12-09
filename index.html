@@ -592,34 +592,9 @@
     </div>
   </div>
 
-  <script>
-    // Solo el código necesario para el tema
-    document.addEventListener('DOMContentLoaded', function() {
-      const themeSwitch = document.getElementById('theme-switch');
-      const body = document.body;
-      
-      // Comprobar tema guardado o preferencia del sistema
-      if (localStorage.getItem('theme') === 'dark' || 
-          (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        body.classList.add('dark');
-        themeSwitch.checked = true;
-      } else {
-        body.classList.add('light');
-      }
-      
-      // Alternar tema
-      themeSwitch.addEventListener('change', function() {
-        if (this.checked) {
-          body.classList.remove('light');
-          body.classList.add('dark');
-          localStorage.setItem('theme', 'dark');
-        } else {
-          body.classList.remove('dark');
-          body.classList.add('light');
-          localStorage.setItem('theme', 'light');
-        }
-      });
-    });
-  </script>
+  <!-- CRUD Application Scripts -->
+  <script src="api.js"></script>
+  <script src="crud.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
