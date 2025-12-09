@@ -8,7 +8,17 @@ class CRUDManager {
 
   async loadAll() {
     try {
-      const data = await this.apiService.getAll();
+      let data;
+      
+      // Manejar servicios especiales para clientes y juegos
+      if (this.entityName === 'Cliente') {
+        data = await this.apiService.getClientes();
+      } else if (this.entityName === 'Juego') {
+        data = await this.apiService.getJuegos();
+      } else {
+        data = await this.apiService.getAll();
+      }
+      
       this.renderFunction(data);
       return data;
     } catch (error) {
@@ -19,7 +29,13 @@ class CRUDManager {
 
   async create(formData) {
     try {
-      await this.apiService.create(formData);
+      if (this.entityName === 'Cliente') {
+        await this.apiService.addCliente(formData);
+      } else if (this.entityName === 'Juego') {
+        await this.apiService.addJuego(formData);
+      } else {
+        await this.apiService.create(formData);
+      }
       this.showSuccess(`${this.entityName} creado exitosamente`);
       await this.loadAll();
       return true;
@@ -31,7 +47,13 @@ class CRUDManager {
 
   async update(id, formData) {
     try {
-      await this.apiService.update(id, formData);
+      if (this.entityName === 'Cliente') {
+        await this.apiService.updateCliente(id, formData);
+      } else if (this.entityName === 'Juego') {
+        await this.apiService.updateJuego(id, formData);
+      } else {
+        await this.apiService.update(id, formData);
+      }
       this.showSuccess(`${this.entityName} actualizado exitosamente`);
       await this.loadAll();
       return true;
@@ -46,7 +68,13 @@ class CRUDManager {
       return false;
     }
     try {
-      await this.apiService.delete(id);
+      if (this.entityName === 'Cliente') {
+        await this.apiService.deleteCliente(id);
+      } else if (this.entityName === 'Juego') {
+        await this.apiService.deleteJuego(id);
+      } else {
+        await this.apiService.delete(id);
+      }
       this.showSuccess(`${this.entityName} eliminado exitosamente`);
       await this.loadAll();
       return true;

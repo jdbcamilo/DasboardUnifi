@@ -49,9 +49,11 @@ Para que la aplicación funcione correctamente, es necesario configurar MockAPI 
 
 ### Paso 3: Crear los recursos (endpoints)
 
-Crea los siguientes recursos en tu proyecto de MockAPI:
+**⚠️ Nota:** Con el plan gratuito de MockAPI solo puedes crear 2 recursos. Por lo tanto, combinaremos clientes y juegos en un único recurso.
 
-#### Recurso: `consolas`
+Crea los siguientes 2 recursos en tu proyecto de MockAPI:
+
+#### Recurso 1: `consolas`
 
 Campos requeridos:
 ```json
@@ -74,27 +76,54 @@ Campos requeridos:
 }
 ```
 
-#### Recurso: `clientes`
+#### Recurso 2: `datos` (Contiene clientes y juegos)
 
 Campos requeridos:
 ```json
 {
-  "nombre": "string",
-  "email": "string",
-  "telefono": "string",
-  "direccion": "string"
+  "clientes": [
+    {
+      "id": "number",
+      "nombre": "string",
+      "email": "string",
+      "telefono": "string",
+      "direccion": "string"
+    }
+  ],
+  "juegos": [
+    {
+      "id": "number",
+      "nombre": "string",
+      "categoria": "string",
+      "plataforma": "string",
+      "estado": "string"
+    }
+  ]
 }
 ```
 
-#### Recurso: `juegos`
-
-Campos requeridos:
+**Ejemplo de datos:**
 ```json
 {
-  "nombre": "string",
-  "categoria": "string",
-  "plataforma": "string",
-  "estado": "string"
+  "id": "1",
+  "clientes": [
+    {
+      "id": 1,
+      "nombre": "Juan Pérez",
+      "email": "juan@email.com",
+      "telefono": "3001234567",
+      "direccion": "Cra 50 #30-15"
+    }
+  ],
+  "juegos": [
+    {
+      "id": 1,
+      "nombre": "Elden Ring",
+      "categoria": "RPG",
+      "plataforma": "PS5",
+      "estado": "Disponible"
+    }
+  ]
 }
 ```
 
