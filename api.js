@@ -1,5 +1,5 @@
 // API Service for MockAPI integration
-const API_BASE_URL = 'https://673667d5aafa2ef222309a0d.mockapi.io/api/v1';
+const API_BASE_URL = 'https://693828524618a71d77cf2b6c.mockapi.io/api/v1';
 
 class APIService {
   constructor(endpoint) {
